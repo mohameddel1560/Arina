@@ -9,10 +9,11 @@
             margin: 0; padding: 0;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh;
+            /* خلفية بربل نيون متدرجة */
             background: radial-gradient(circle at center, #6d28d9 0%, #1e1b4b 100%);
             font-family: 'Segoe UI', Roboto, sans-serif;
             color: white;
-            padding-bottom: 120px;
+            padding-bottom: 140px; /* مساحة للألبومات */
         }
 
         .card {
@@ -24,6 +25,7 @@
             text-align: center;
             width: 85%;
             max-width: 380px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
         }
 
         .profile-img {
@@ -46,18 +48,36 @@
             border: 1px solid rgba(240, 171, 252, 0.3);
         }
 
+        h1 { margin: 10px 0; font-size: 32px; letter-spacing: 1px; }
+        .username { color: #d8b4fe; font-size: 16px; margin-bottom: 25px; display: block; }
+
         .info-row {
             background: rgba(0, 0, 0, 0.3);
-            margin: 10px 0; padding: 15px;
-            border-radius: 18px; font-size: 16px;
-            display: flex; align-items: center; gap: 15px;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 18px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.3s;
         }
 
+        .info-row:hover { transform: translateX(5px); background: rgba(255, 255, 255, 0.1); }
+
         .insta-btn {
-            display: block; margin-top: 30px; padding: 15px;
+            display: block;
+            margin-top: 30px;
+            padding: 15px;
             background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            color: white; text-decoration: none; border-radius: 15px; font-weight: bold;
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
+
+        .quote { font-style: italic; opacity: 0.8; margin-top: 20px; font-size: 14px; }
 
         /* شريط الألبومات السفلي */
         .music-dock {
@@ -79,7 +99,12 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             object-fit: cover;
         }
-        .playing { border: 2px solid #f0abfc; box-shadow: 0 0 15px #f0abfc; transform: scale(1.05); }
+        .playing { 
+            border: 2px solid #f0abfc; 
+            box-shadow: 0 0 15px #f0abfc; 
+            transform: scale(1.1); 
+        }
+        audio { display: none; }
     </style>
 </head>
 <body>
@@ -88,25 +113,25 @@
         <img src="https://iili.io/qf4hLSR.jpg" alt="Arina" class="profile-img">
         <div class="date-badge">June 6, 2011 🕊️</div>
         <h1>Арина</h1>
-        <span style="color: #d8b4fe; font-size: 16px; display: block; margin-bottom: 25px;">@arinwjh</span>
+        <span class="username">@arinwjh</span>
         <div class="info-row">☦️ <span>Orthodox Christian</span></div>
         <div class="info-row">🎵 <span>A$AP Rocky Vibes</span></div>
         <div class="info-row">🥘 <span>Chicken Julienne Lover</span></div>
-        <p style="font-style: italic; opacity: 0.8; margin-top: 20px;">"Jesus Christ loves you" ✨</p>
+        <p class="quote">"Jesus Christ loves you" ✨</p>
         <a href="https://www.instagram.com/arinwjh?igsh=b29mYmEwM29mZmty" class="insta-btn">Follow me on Instagram</a>
     </div>
 
     <div class="music-dock">
         <div class="album-box" onclick="handleMusic('58xKTGxmeHI.mp3', this)">
-            <img src="https://i.ibb.co/xKjb0Y2c/IMG-20260228-121928.jpg" class="album-art" alt="Hope">
+            <img src="https://i.ibb.co/xKjb0Y2c/IMG-20260228-121928.jpg" class="album-art">
             <div style="font-size: 10px;">Hope</div>
         </div>
         <div class="album-box" onclick="handleMusic('pgN-vvVVxMA.mp3', this)">
-            <img src="https://i.ibb.co/xKjb0Y2c/IMG-20260228-121928.jpg" class="album-art" alt="Sad">
+            <img src="https://i.ibb.co/xKjb0Y2c/IMG-20260228-121928.jpg" class="album-art">
             <div style="font-size: 10px;">SAD!</div>
         </div>
         <div class="album-box" onclick="handleMusic('5qm8PH4xAss.mp3', this)">
-            <img src="https://i.ibb.co/M5P730GQ/3389143a3e12456fc07deb03fd3225a7-1000x1000x1.png" class="album-art" alt="50Cent">
+            <img src="https://i.ibb.co/M5P730GQ/3389143a3e12456fc07deb03fd3225a7-1000x1000x1.png" class="album-art">
             <div style="font-size: 10px;">50 Cent</div>
         </div>
     </div>
@@ -115,32 +140,30 @@
 
     <script>
         const player = document.getElementById('audio-player');
-        let activeFile = "";
+        let currentFile = "";
 
         function handleMusic(fileName, element) {
             const art = element.querySelector('.album-art');
 
-            // إذا كانت نفس الأغنية شغالة، أوقفها
-            if (activeFile === fileName) {
-                if (!player.paused) {
-                    player.pause();
-                    art.classList.remove('playing');
-                } else {
+            if (currentFile === fileName) {
+                if (player.paused) {
                     player.play();
                     art.classList.add('playing');
+                } else {
+                    player.pause();
+                    art.classList.remove('playing');
                 }
                 return;
             }
 
-            // إذا كانت أغنية جديدة، أوقف القديمة وشغل الجديدة
             document.querySelectorAll('.album-art').forEach(img => img.classList.remove('playing'));
-            
             player.src = fileName;
+            player.load();
             player.play().then(() => {
                 art.classList.add('playing');
-                activeFile = fileName;
+                currentFile = fileName;
             }).catch(error => {
-                alert("Please tap again to allow music!");
+                console.log("Playback interaction required");
             });
         }
     </script>
